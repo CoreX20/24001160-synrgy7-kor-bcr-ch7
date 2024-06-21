@@ -7,7 +7,6 @@ interface LoginParams {
 }
 
 async function doLogin({ email, password }: LoginParams) {
-    console.log({ email, password });
     try {
         const response = await fetch("http://localhost:3000/login", {
             method: "POST",
@@ -44,10 +43,10 @@ async function getUser(token : string){
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    // const [isLoading, setIsLoading] = useState<boolean>(false)  
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
-    const token = localStorage.getItem("token")
+    const [password, setPassword] = useState<string>("");  
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [isLoginFailed, setIsLoginFailed] = useState<boolean>(false);
+    const token = localStorage.getItem("token");
     useEffect(()=> {
         setIsLoggedIn(!!token)
     },[token]);
@@ -57,24 +56,22 @@ const Login: React.FC = () => {
       
         try {
           const token = await doLogin({ email, password });
-          if(!token) {
-            setIsLoggedIn(false);
-            return
+          if(token) {
+            localStorage.setItem("token", token);
+            const userRole = await getUser(token);
+            if (userRole == "admin" || userRole == "superadmin") {
+                navigate("/dashboard");
+                return
+            } else {
+                navigate("/cars");
+            }
+            setIsLoginFailed(false);
           }
-          localStorage.setItem("token", token);
-          const userRole = await getUser(token);
-          if (userRole == "admin" || userRole == "superadmin") {
-            navigate("/dashboard");
-            return
-          }
-          navigate("/cars");
+          setIsLoginFailed(true);
         } catch (error:any) {
-          console.error(error.message);
-        //   setLoginFailed(true);
+            console.error(error.message);
+            setIsLoginFailed(true);
         } 
-        // finally {
-        //   setIsLoading(false);
-        // }
       };
     
     return (
@@ -87,7 +84,7 @@ const Login: React.FC = () => {
                     <div className="flex-row" style={{ maxWidth: '370px', width: '100%' }}>
                         <div className="logo mb-4" style={{backgroundColor:'#CFD4ED', paddingBottom: '20px'}} />
                         <h1 className="fw-bold">Welcome</h1>
-                        {!isLoggedIn && (
+                        {isLoginFailed && (
                         <div className="alert alert-danger" role="alert">
                             Masukkan username dan password yang benar. Perhatikan penggunaan huruf kapital.
                         </div>

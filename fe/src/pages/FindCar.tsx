@@ -27,7 +27,7 @@ function getRandomInt(min : number, max : number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function FindCar() {
+const FindCar: React.FC = () => {
   const [carsData, setCarsData] = useState<Car[]>([]);
   const [filteredCars, setFilteredCars] = useState<Car[]>([]);
   const [tipeDriver, setTipeDriver] = useState('');
@@ -89,7 +89,6 @@ function FindCar() {
           };
         });
         setCarsData(updatedCars);
-        console.log({updatedCars})
 
         const filteredCars = carsData.filter((car:Car) =>
           car.driverType === tipeDriver &&
@@ -97,8 +96,6 @@ function FindCar() {
           new Date(car.availableAt) >= new Date(inputDate) &&
           new Date (car.availableAt).toLocaleTimeString() >= inputTime
         );
-        console.log({filteredCars});
-
         setFilteredCars(filteredCars);
       })
       .catch(error => {

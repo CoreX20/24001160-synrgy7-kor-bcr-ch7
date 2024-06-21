@@ -1,4 +1,5 @@
-function Footer() {
+import React from "react";
+const Footer: React.FC = () => {
     return (
         <footer className="footer container">
   <div className="row">

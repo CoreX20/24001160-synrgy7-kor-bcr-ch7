@@ -1,5 +1,6 @@
+import React from 'react';
 import OwlCarousel from 'react-owl-carousel';
-function Main() {
+const Main: React.FC = () => {
     const options = {
         loop: true,
          margin: 20,

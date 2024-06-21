@@ -1,4 +1,6 @@
 import React from 'react';
+import UserProvider from '../context/userContext';
+import User from './User';
 const Header : React.FC = () => {
     return (
         <div className="d-flex shadow-sm bg-light position-relative" style={{ height: '70px' }}>
@@ -20,10 +22,9 @@ const Header : React.FC = () => {
                     </div>
 
                     <div className="d-flex align-items-center">
-                        <div className="rounded-circle d-flex align-items-center justify-content-center fw-bold" style={{ width: 40, height: 40, backgroundColor: '#CFD4ED', color: '#151515', fontSize: 18 }}>
-                            U
-                        </div>
-                        <div className="ms-2">Unis Badri</div>
+                        <UserProvider>
+                            <User/>
+                        </UserProvider>
                     </div>
                 </div>
                 

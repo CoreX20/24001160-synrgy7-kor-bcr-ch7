@@ -9,13 +9,23 @@ interface LayoutProps {
 
 const Layout : React.FC<LayoutProps> = ({ children }) => {
   return (
-      <div className='row' style={{width: '100%', overflow: 'hidden'}}>
+      <div className='row vh-100' style={{width: '100%'}}>
         <div className="col-md-1 p-0">
           <Navbar/>
         </div>
         <div className="col-md-11 p-0">
           <Header/>
-          {children}
+          <div className='row'>
+            <div className="col-2">
+              <div style={{height:'100vh', backgroundColor : '#fff' }}>
+                <Sidebar/>
+              </div>
+          </div>
+            <div className="col-10 pt-4" style={{backgroundColor:'#F4F5F7'}}>
+              {children}
+            </div>
+          </div>
+          
         </div>
       </div>
   );

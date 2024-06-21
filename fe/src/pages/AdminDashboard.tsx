@@ -1,7 +1,5 @@
-import React, {useEffect, useState} from "react";
-import Layout from "../layout/DashboardLayout";
-import CarCard from "../components/CarCard";
-import Sidebar from "../components/SidebarDashboard"
+import React, {useEffect, useState} from 'react';
+import Layout from '../layout/DashboardLayout';
 interface Car {
     id : number;
     name : string;
@@ -10,67 +8,93 @@ interface Car {
     available : boolean;
     start_rent : string;
     finish_rent : string;
-    created_by : string;
-    updated_by : string;
-    deleted_by : string;
-    created_at : Date;
-    updated_at : Date;
-    deleted_at : Date;
+    created_at : string;
+    updated_at : string;
+    driverType: 'dengan-supir' | 'tanpa-supir';
 }
-
 const AdminDashboard: React.FC = () => {
     const [cars, setCars] = useState<Car[]>([]);
-
-    // useEffect(() => {
-    //     fetch("http://localhost:3000/cars")
-    //         .then(response => response.json())
-    //         .then(data => setCars(data))
-    //         .catch(error => console.error("Error fetching cars:", error));
-    // }, []);
-    useEffect(() => {
-        const fetchCars = async () => {
-            try {
-                const response = await fetch("http://localhost:3000/cars");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch cars");
-                }
-                const data = await response.json();
-                console.log(data.cars)
-                setCars(data.cars);
-            } catch (error) {
-                console.error("Error fetching cars:", error);
-                // Handle error gracefully, e.g., show a message to the user
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [carsPerPage] = useState<number>(5); // Jumlah mobil per halaman
+    const indexOfLastCar = currentPage * carsPerPage;
+    const indexOfFirstCar = indexOfLastCar - carsPerPage;
+    const currentCars = cars.slice(indexOfFirstCar, indexOfLastCar);
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+    const fetchCars = async () => {
+        try {
+            const response = await fetch("http://localhost:3000/cars");
+            if (!response.ok) {
+                throw new Error("Failed to fetch cars");
             }
-        };
-
+            const data = await response.json();
+            const updatedData = data.cars.map((car:Car) => {
+                const listDriverType = ['dengan-supir', 'tanpa-supir'];
+                const randomIndex = Math.floor(Math.random() * listDriverType.length)
+                return {
+                    ...car,
+                    driverType: listDriverType[randomIndex]
+                }
+            });
+            setCars(updatedData);
+        } catch (error) {
+            console.error("Error fetching cars:", error);
+        }
+    };
+    useEffect(() => {
         fetchCars();
     }, []);
-    return (
-        <div>
-            <Layout>
-                {/* <h1>Admin page</h1>
-                <p>This is the admin page of the website.</p> */}
-                <div className="row">
-                    <div className="col-2">
-                        <div style={{height:'100vh', backgroundColor : '#fff' }}>
-                           <Sidebar/>
-                        </div>
-                    </div>
-                    <div className="col-10" style={{backgroundColor:'#F4F5F7'}}>
-                        <h1 className="fw-bold">List Cars</h1>
-                        <div className="d-flex flex-wrap justify-content-center" style={{gap:'24px'}}>
-                            {cars.map((car) => (
-                            <CarCard key={car.id} car={car} />
-                        ))}
-                        </div>
-                    </div>
-                </div>
-                
-                
-                
-                
-            </Layout>
-        </div>
-    )
-}
-export default AdminDashboard
+  return (
+    <>
+    <Layout>
+        <h2 className='fw-bold'>Dashboard</h2>
+        <p className='fw-bold'>List Car</p>
+        <table className="table table-hover">
+        <thead className='table-primary'>
+            <tr>
+            <th scope="col">No</th>
+            <th scope="col">Name</th>
+            <th scope="col">Category</th>
+            <th scope="col">Price</th>
+            <th scope="col">Start Rent</th>
+            <th scope="col">Finish Rent</th>
+            <th scope="col">Created At</th>
+            <th scope="col">Updated At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {currentCars.map((car,index) => (
+            <tr key={car.id}>
+                <td>{indexOfFirstCar + index + 1}</td>
+                <td>{car.name}</td>
+                <td>{car.driverType}</td>
+                <td>{car.price}</td>
+                <td>{car.start_rent}</td>
+                <td>{car.finish_rent}</td>
+                <td>{car.created_at}</td>
+                <td>{car.updated_at}</td>
+            </tr>
+            ))}
+        </tbody>
+        </table>
+        {/* Pagination */}
+        <nav aria-label="Page navigation example">
+            <ul className="pagination">
+                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => paginate(currentPage - 1)}>&laquo;</button>
+                </li>
+                {[...Array(Math.ceil(cars.length / carsPerPage)).keys()].map((number) => (
+                    <li key={number + 1} className={`page-item ${currentPage === number + 1 ? 'active' : ''}`}>
+                        <button className="page-link" onClick={() => paginate(number + 1)}>{number + 1}</button>
+                    </li>
+                ))}
+                <li className={`page-item ${currentPage === Math.ceil(cars.length / carsPerPage) ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => paginate(currentPage + 1)}>&raquo;</button>
+                </li>
+            </ul>
+        </nav>
+    </Layout>
+    </>
+  );
+};
+
+export default AdminDashboard;

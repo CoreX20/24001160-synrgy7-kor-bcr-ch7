@@ -43,11 +43,6 @@ export const authMiddleware = {
                 message: "Access Denied!"
             })
         }
-        // if(req.user.role == 'superadmin') {
-        //     return res.status(403).json({
-        //         message: "Forbidden"
-        //     })
-        // }
         next();
     }
 }

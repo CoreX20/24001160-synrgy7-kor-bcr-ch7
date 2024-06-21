@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-function Header() {
+const Header: React.FC = () => {
     const location = useLocation();
     const showButton = location.pathname !== '/cars';
   return (
